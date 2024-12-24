@@ -51,9 +51,9 @@ echo "<b>update ip range phpipam</b><br><br>";
 <?php
 
 $response = ipamRequest($APIurl.'/subnets','GET','');
-echo $response;
+//echo $response;
 $decodedJson = json_decode($response, true);
-var_dump($decodedJson);
+//var_dump($decodedJson);
 foreach ($decodedJson['data'] as $key => $value) {
 	echo '<option value="'.$value['id'].'"';
 	if(isset($_GET['subnet']) && $_GET['subnet'] == $value['id'])
@@ -143,7 +143,11 @@ if(isset($_POST['action']) && $_POST['action']=="editRange")  {
 		$decodedJson = json_decode($response, true);
 		//case1: ip already exist, need to PATCH
 		$tabUpdate = [];
-		if($decodedJson['code']=='200' && $_POST['confDel'] != 'yes') {
+		if(isset($_POST['confDel'])) 
+			$confDel=$_POST['confDel'];
+		else
+			$confDel="no";
+		if(isset($decodedJson['code']) && $decodedJson['code']=='200' && $confDel != 'yes') {
 			$addressDetail= $decodedJson['data'][0];
 			$id= $addressDetail['id'];
 			$ip = $addressDetail['ip'];
@@ -169,7 +173,7 @@ if(isset($_POST['action']) && $_POST['action']=="editRange")  {
 			
 		}
 		//case2: new ip need to POST
-		elseif($_POST['confDel'] != 'yes') {
+		elseif($confDel != 'yes') {
 			echo '<br>'.$ip.' not found - ';
 			if($_POST['tags'] != '')
 				$tag=',"tag": '.$_POST['tags'];
@@ -181,7 +185,7 @@ if(isset($_POST['action']) && $_POST['action']=="editRange")  {
 			echo $response;
 		}
 		//case2: ip delete DELETE
-		elseif($_POST['confDel'] == 'yes'){
+		elseif($confDel == 'yes'){
 			$addressDetail= $decodedJson['data'][0];
 			$id= $addressDetail['id'];
 			echo "<br>delete ip addresses ".$ip.' - ';
