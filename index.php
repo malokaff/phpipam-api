@@ -49,7 +49,7 @@ echo "<b>update ip range phpipam</b><br><br>";
 	<option value=""></option>
 <?php
 
-$response = ipamRequest($APIurl.'/phpipam/subnets','GET','');
+$response = ipamRequest($APIurl.'/subnets','GET','');
 //echo $response;
 $decodedJson = json_decode($response, true);
 //var_dump($decodedJson);
@@ -67,7 +67,7 @@ foreach ($decodedJson['data'] as $key => $value) {
 <?php
 //select the range where we want to do the change
 if(isset($_GET['subnet']) || isset($_POST['subnet'])) {
-	$response = ipamRequest($APIurl.'/phpipam/subnets/'.$_GET['subnet'],'GET','');
+	$response = ipamRequest($APIurl.'/subnets/'.$_GET['subnet'],'GET','');
 	//echo $response;
 	$decodedJson = json_decode($response, true);
 	$subnet= $decodedJson['data']["subnet"];
@@ -121,7 +121,7 @@ if(isset($_GET['subnet']) || isset($_POST['subnet'])) {
 
 //run a loop to get info on each ip
 if(isset($_POST['action']) && $_POST['action']=="editRange")  {
-	$response = ipamRequest($APIurl.'/phpipam/subnets/'.$_GET['subnet'],'GET','');
+	$response = ipamRequest($APIurl.'/subnets/'.$_GET['subnet'],'GET','');
 	//echo $response;
 	$decodedJson = json_decode($response, true);
 	$subnet= $decodedJson['data']["subnet"];
@@ -131,7 +131,7 @@ if(isset($_POST['action']) && $_POST['action']=="editRange")  {
 	for($i = $_POST['start']; $i <= $_POST['stop']; $i++) {
 		$ip = $subnetFirstPart.'.'.$i;
 		//check if ip exist and get id
-		$response = ipamRequest($APIurl.'/phpipam/addresses/search/'.$ip,'GET','');
+		$response = ipamRequest($APIurl.'/addresses/search/'.$ip,'GET','');
 		//echo $response;
 		$decodedJson = json_decode($response, true);
 		//case1: ip already exist, need to PATCH
@@ -156,7 +156,7 @@ if(isset($_POST['action']) && $_POST['action']=="editRange")  {
 			//print_r($tabUpdate);
 			$sizeTab=count($tabUpdate)-1;
 			$body = json_encode($tabUpdate[$sizeTab], JSON_PRETTY_PRINT);
-			$url = $APIurl.'/phpipam/addresses/'.$id;
+			$url = $APIurl.'/addresses/'.$id;
 			$response = ipamRequest($url,'PATCH',$body);
 			echo $response;
 			
@@ -170,7 +170,7 @@ if(isset($_POST['action']) && $_POST['action']=="editRange")  {
 				$tag='';
 			$body= '{"ip": "'.$ip.'","subnetId": '.$_GET['subnet'].$tag.',"hostname": "'.$_POST['hostname'].'","description": "'.$_POST['description'].'"}';
 			echo $body;
-			$response = ipamRequest($APIurl.'/phpipam/addresses/','POST',$body);
+			$response = ipamRequest($APIurl.'/addresses/','POST',$body);
 			echo $response;
 		}
 		//case2: ip delete DELETE
@@ -178,7 +178,7 @@ if(isset($_POST['action']) && $_POST['action']=="editRange")  {
 			$addressDetail= $decodedJson['data'][0];
 			$id= $addressDetail['id'];
 			echo "<br>delete ip addresses ".$ip.' - ';
-			$url = $APIurl.'/phpipam/addresses/'.$id;
+			$url = $APIurl.'/addresses/'.$id;
 			//echo $url;
 			$response = ipamRequest($url,'DELETE','');
 			echo $response;
