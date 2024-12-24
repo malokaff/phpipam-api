@@ -4,6 +4,7 @@
 $curl = curl_init();
 include('config.php');
 function ipamRequest($url,$method,$body) {
+	global $token;
 	global $curl;
 	curl_setopt_array($curl, array(
 	  CURLOPT_URL => $url,
@@ -18,7 +19,7 @@ function ipamRequest($url,$method,$body) {
 	  CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
 	  CURLOPT_CUSTOMREQUEST => $method ,
 	  CURLOPT_POSTFIELDS => $body,
-	  CURLOPT_HTTPHEADER => array('token: AMczqWTl8hKSfzhJpGcVdmDY1PjTRhom','Content-Type: application/json')
+	  CURLOPT_HTTPHEADER => array('token: '.$token,'Content-Type: application/json')
 	  //CURLOPT_HTTPHEADER => array('token: AMczqWTl8hKSfzhJpGcVdmDY1PjTRhom')
 	));
 	$response = curl_exec($curl);
@@ -50,9 +51,9 @@ echo "<b>update ip range phpipam</b><br><br>";
 <?php
 
 $response = ipamRequest($APIurl.'/subnets','GET','');
-//echo $response;
+echo $response;
 $decodedJson = json_decode($response, true);
-//var_dump($decodedJson);
+var_dump($decodedJson);
 foreach ($decodedJson['data'] as $key => $value) {
 	echo '<option value="'.$value['id'].'"';
 	if(isset($_GET['subnet']) && $_GET['subnet'] == $value['id'])
@@ -86,7 +87,9 @@ if(isset($_GET['subnet']) || isset($_POST['subnet'])) {
 			if(isset($_POST['stop']))
 				echo ' value="'.$_POST['stop'].'"';
 			echo '></td>';
-			echo '<input type=hidden name="subnet" value="'.$_POST['subnet'].'">';
+			echo '<input type=hidden name="subnet" value="';
+			if(isset($_POST['subnet'])) echo $_POST['subnet'];
+			echo '">';
 			echo '<input type=hidden name="action" value="editRange"></td>';
 		echo '</tr><tr>';
 			echo "<td>tag: <br><select name='tags' id='tags'><option value=''></option>";
@@ -106,8 +109,12 @@ if(isset($_GET['subnet']) || isset($_POST['subnet'])) {
 				if(isset($_POST['tags']) && $_POST['tags']==4)
 					echo " selected";
 				echo ">DHCP</option></select></td>";
-			echo '<td>hostname<br><input type=text name="hostname" value="'.$_POST['hostname'].'"></td>';
-			echo '<td>description<br><input type=text name="description" value="'.$_POST['description'].'"></td>';
+			echo '<td>hostname<br><input type=text name="hostname" value="';
+			if(isset($_POST['hostname'])) echo $_POST['hostname'];
+			echo '"></td>';
+			echo '<td>description<br><input type=text name="description" value="';
+			if(isset($_POST['description'])) echo $_POST['description'];
+			echo '"></td>';
 		echo '</tr><tr>';
 			echo '<td>delete <input type="checkbox" name="delete"';
 				if(isset($_POST['delete']) && $_POST['delete']=='on')
