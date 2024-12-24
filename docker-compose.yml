@@ -1,0 +1,12 @@
+services:
+  phpipam-api:
+    container_name: phpipam-api
+    image: php:8.2-apache
+    build: 
+      context: .
+      #dockerfile: dockerfile-frontend
+    #image: php:8.2-apache
+    volumes:
+      - ./phpipam-api:/var/www/html/
+    ports:
+      - 8080:80
